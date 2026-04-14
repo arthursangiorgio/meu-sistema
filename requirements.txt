@@ -1,0 +1,5 @@
+youtube-comment-downloader>=0.1.76
+yfinance>=0.2.54
+pandas>=2.2.3
+numpy>=2.2.4
+matplotlib>=3.10.1

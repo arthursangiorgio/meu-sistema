@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resumo de comentários do YouTube</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --card: #fffaf2;
+      --ink: #1f2937;
+      --muted: #5f6c80;
+      --accent: #d97706;
+      --border: #e6dcc9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top right, rgba(217, 119, 6, 0.18), transparent 28%),
+        linear-gradient(180deg, #f9f5ee 0%, var(--bg) 100%);
+      color: var(--ink);
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 18px 48px;
+    }
+    .hero {
+      background: rgba(255, 250, 242, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 18px 40px rgba(120, 93, 44, 0.08);
+    }
+    h1, h2, h3 {
+      margin: 0 0 12px;
+      line-height: 1.1;
+    }
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+    }
+    p, li, td {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    a {
+      color: #0f4c81;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+    .stat-card, .panel, .table-card, .quote-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(120, 93, 44, 0.07);
+    }
+    .stat-card strong {
+      display: block;
+      font-size: 1.9rem;
+      margin-bottom: 6px;
+    }
+    .section {
+      margin-top: 28px;
+      display: grid;
+      gap: 18px;
+    }
+    .three-col {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .two-col {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      align-items: center;
+      gap: 12px;
+    }
+    .bar-track {
+      width: 100%;
+      height: 12px;
+      background: #e9e2d3;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+    .keyword-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .keyword-label {
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+    .quotes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .quote-card p {
+      margin-top: 0;
+      font-size: 1.03rem;
+    }
+    .quote-card footer {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .muted {
+      color: var(--muted);
+    }
+    @media (max-width: 900px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .keyword-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <p class="muted">Resumo automático dos comentários do vídeo</p>
+      <h1>MAURO CEZAR: PEDRO EM MODO PRIME! QUANDO ESTÁ AFIM É O MELHOR 9 DA AMÉRICA DO SUL</h1>
+      <p><a href="https://www.youtube.com/watch?v=KXZzb6E5t5c">https://www.youtube.com/watch?v=KXZzb6E5t5c</a></p>
+
+      <div class="stats">
+        <div class="stat-card"><strong>113</strong> comentários analisados</div>
+        <div class="stat-card"><strong>93</strong> autores únicos</div>
+        <div class="stat-card"><strong>115.9</strong> caracteres por comentário</div>
+        <div class="stat-card"><strong>1</strong> likes medianos</div>
+      </div>
+    </section>
+
+    <section class="section three-col">
+      
+            <div class="panel">
+              <h3>Positivos</h3>
+              <div class="bar-row"><span>6</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#177245"></div></div></div>
+            </div>
+            
+            <div class="panel">
+              <h3>Neutros</h3>
+              <div class="bar-row"><span>106</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#5f6c80"></div></div></div>
+            </div>
+            
+            <div class="panel">
+              <h3>Negativos</h3>
+              <div class="bar-row"><span>1</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#b63b3b"></div></div></div>
+            </div>
+            
+    </section>
+
+    <section class="section two-col">
+      <div class="table-card">
+        <h2>Temas mais recorrentes</h2>
+        <ul><li>&quot;não sabe&quot; aparece em 3 comentários</li><li>&quot;palmeiras não&quot; aparece em 3 comentários</li><li>&quot;passar vergonha&quot; aparece em 3 comentários</li><li>&quot;cara não&quot; aparece em 3 comentários</li><li>&quot;leila pereira&quot; aparece em 3 comentários</li><li>&quot;nova safra jornalistas&quot; reaparece 2 vezes</li></ul>
+      </div>
+      <div class="table-card">
+        <h2>Palavras-chave</h2>
+        
+            <div class="keyword-row">
+              <div class="keyword-label">não</div>
+              <div class="bar-row"><span>38</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">pedro</div>
+              <div class="bar-row"><span>17</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">flamengo</div>
+              <div class="bar-row"><span>15</span><div class="bar-track"><div class="bar-fill" style="width:40%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">lavieri</div>
+              <div class="bar-row"><span>12</span><div class="bar-track"><div class="bar-fill" style="width:32%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">cara</div>
+              <div class="bar-row"><span>12</span><div class="bar-track"><div class="bar-fill" style="width:32%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">jogo</div>
+              <div class="bar-row"><span>12</span><div class="bar-track"><div class="bar-fill" style="width:32%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">bola</div>
+              <div class="bar-row"><span>11</span><div class="bar-track"><div class="bar-fill" style="width:29%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">palmeiras</div>
+              <div class="bar-row"><span>11</span><div class="bar-track"><div class="bar-fill" style="width:29%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">time</div>
+              <div class="bar-row"><span>10</span><div class="bar-track"><div class="bar-fill" style="width:27%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">quando</div>
+              <div class="bar-row"><span>9</span><div class="bar-track"><div class="bar-fill" style="width:24%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">jogar</div>
+              <div class="bar-row"><span>9</span><div class="bar-track"><div class="bar-fill" style="width:24%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">porque</div>
+              <div class="bar-row"><span>9</span><div class="bar-track"><div class="bar-fill" style="width:24%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">ter</div>
+              <div class="bar-row"><span>8</span><div class="bar-track"><div class="bar-fill" style="width:22%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">vai</div>
+              <div class="bar-row"><span>8</span><div class="bar-track"><div class="bar-fill" style="width:22%;background:#2563eb"></div></div></div>
+            </div>
+            
+            <div class="keyword-row">
+              <div class="keyword-label">uol</div>
+              <div class="bar-row"><span>7</span><div class="bar-track"><div class="bar-fill" style="width:19%;background:#2563eb"></div></div></div>
+            </div>
+            
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="table-card">
+        <h2>Comentários representativos</h2>
+        <div class="quotes">
+            <article class="quote-card">
+              <p>nossa o MC come direto o Lavieri...cara vem despreparado nos comentarios.</p>
+              <footer>@fabiotonon8769 · 122 likes · 0 replies</footer>
+            </article>
+            
+            <article class="quote-card">
+              <p>Danilo ele é um cara que entra nesse bate bola pq é amigo de alguém, é impossível que ele não sabe que o Mirassol consultou mas não oficializou. 
+É aquele que não dá informação, ele só busca criar dúvidas, desqualificar e apoiar o Palmeiras. 
+Ele é medíocre, ele atrapalha a mesa redonda.</p>
+              <footer>@showmaumau1 · 108 likes · 0 replies</footer>
+            </article>
+            
+            <article class="quote-card">
+              <p>Esse lavieri e um desevirco a informação. Não vi ele ano passado, falando sobre falta de serenidade no campeonato, quando seu time pediu adiamento com o jogo com o santos . Hoje tá horrível, ter jornalista torcedor.</p>
+              <footer>@joaofelipenogueiranunes7359 · 63 likes · 0 replies</footer>
+            </article>
+            
+            <article class="quote-card">
+              <p>Esse Lavieri é o típico Palmeirense</p>
+              <footer>@victormeletti8275 · 57 likes · 0 replies</footer>
+            </article>
+            
+            <article class="quote-card">
+              <p>Ninguém disse. O arrasca impede o Fábio de chitar para frente e teve que jogar pro lado.</p>
+              <footer>@maurovoigt7130 · 40 likes · 0 replies</footer>
+            </article>
+            </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="table-card">
+        <h2>Comentários mais curtidos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Autor</th>
+              <th>Likes</th>
+              <th>Replies</th>
+              <th>Quando</th>
+              <th>Trecho</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td>@fabiotonon8769</td>
+              <td>122</td>
+              <td>0</td>
+              <td>há 22 horas</td>
+              <td>nossa o MC come direto o Lavieri...cara vem despreparado nos comentarios.</td>
+            </tr>
+            
+            <tr>
+              <td>@showmaumau1</td>
+              <td>108</td>
+              <td>0</td>
+              <td>há 22 horas</td>
+              <td>Danilo ele é um cara que entra nesse bate bola pq é amigo de alguém, é impossível que ele não sabe que o Mirassol consultou mas não oficializou. 
+É aquele que não dá informação, ele só busca criar dúv</td>
+            </tr>
+            
+            <tr>
+              <td>@joaofelipenogueiranunes7359</td>
+              <td>63</td>
+              <td>0</td>
+              <td>há 22 horas</td>
+              <td>Esse lavieri e um desevirco a informação. Não vi ele ano passado, falando sobre falta de serenidade no campeonato, quando seu time pediu adiamento com o jogo com o santos . Hoje tá horrível, ter jorna</td>
+            </tr>
+            
+            <tr>
+              <td>@victormeletti8275</td>
+              <td>57</td>
+              <td>0</td>
+              <td>há 22 horas</td>
+              <td>Esse Lavieri é o típico Palmeirense</td>
+            </tr>
+            
+            <tr>
+              <td>@maurovoigt7130</td>
+              <td>40</td>
+              <td>0</td>
+              <td>há 22 horas</td>
+              <td>Ninguém disse. O arrasca impede o Fábio de chitar para frente e teve que jogar pro lado.</td>
+            </tr>
+            
+            <tr>
+              <td>@timaocapixaba503</td>
+              <td>30</td>
+              <td>0</td>
+              <td>há 22 horas</td>
+              <td>De acordo com o pessoal da TNT o Fluminense tem time/elenco melhor que o Flamengo. Piada.</td>
+            </tr>
+            
+            <tr>
+              <td>@FelipeTeixeiraa42</td>
+              <td>29</td>
+              <td>0</td>
+              <td>há 22 horas</td>
+              <td>Lavieri semana passada falou que o jornalista não poderia felicitar o Diniz por sua chegada ao Corinthians, o que eu concordo, afinal o jornalista não é empregado do Corinthians. Só que o mesmo atua n</td>
+            </tr>
+            
+            <tr>
+              <td>@timaocapixaba503</td>
+              <td>24</td>
+              <td>0</td>
+              <td>há 23 horas</td>
+              <td>Caraca tinha esquecido desse jogo contra o Santos, acho que a Carminha também esqueceu.</td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

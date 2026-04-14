@@ -1,0 +1,46 @@
+const API_BASE = "http://127.0.0.1:8000/api";
+
+async function request(path, options = {}) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
+    ...options
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.detail || "Falha na comunicacao com a API.");
+  }
+
+  return response.json();
+}
+
+export const api = {
+  login: (payload) =>
+    request("/login", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  categories: () => request("/categories"),
+  createCategory: (payload) =>
+    request("/categories", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  transactions: (userId, month) =>
+    request(`/transactions?user_id=${userId}${month ? `&month=${month}` : ""}`),
+  createTransaction: (payload) =>
+    request("/transactions", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  dashboard: (userId, month) =>
+    request(`/dashboard?user_id=${userId}${month ? `&month=${month}` : ""}`),
+  reports: (userId, month) =>
+    request(`/reports?user_id=${userId}${month ? `&month=${month}` : ""}`),
+  exportInfo: () => request("/export-info"),
+  exportUrl: (format, userId, month) =>
+    `${API_BASE}/exports/${format}?user_id=${userId}${month ? `&month=${month}` : ""}`
+};
