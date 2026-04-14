@@ -1,4 +1,7 @@
-const API_BASE = "/api";
+const isLocalHost =
+  window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+
+const API_BASE = isLocalHost ? "http://127.0.0.1:8000/api" : "/api";
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE}${path}`, {
@@ -20,6 +23,12 @@ async function request(path, options = {}) {
 export const api = {
   login: (payload) =>
     request("/login", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  users: () => request("/users"),
+  createUser: (payload) =>
+    request("/users", {
       method: "POST",
       body: JSON.stringify(payload)
     }),

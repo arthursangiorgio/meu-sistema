@@ -203,6 +203,10 @@ label {
   grid-template-columns: 1.4fr 1fr 1fr;
 }
 
+.grid-form.compact-two {
+  grid-template-columns: 1fr 1fr auto;
+}
+
 .grid-form .full {
   grid-column: 1 / -1;
 }
@@ -313,6 +317,23 @@ label {
 .category-list {
   display: grid;
   gap: 12px;
+}
+
+.user-grid,
+.user-list {
+  display: grid;
+  gap: 20px;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(244, 247, 251, 0.95);
+  border: 1px solid #dbe4f0;
 }
 
 .table-wrap {

@@ -54,6 +54,24 @@ def login(payload: schemas.LoginRequest, db: Session = Depends(get_db)):
     return new_user
 
 
+@app.get("/api/users", response_model=list[schemas.UserResponse])
+def list_users(db: Session = Depends(get_db)):
+    return db.query(models.User).order_by(models.User.username.asc()).all()
+
+
+@app.post("/api/users", response_model=schemas.UserResponse)
+def create_user(payload: schemas.UserCreate, db: Session = Depends(get_db)):
+    exists = db.query(models.User).filter(models.User.username == payload.username).first()
+    if exists:
+        raise HTTPException(status_code=400, detail="Usuario ja cadastrado.")
+
+    user = models.User(username=payload.username, password=payload.password)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 @app.get("/api/categories", response_model=list[schemas.CategoryResponse])
 def list_categories(db: Session = Depends(get_db)):
     return db.query(models.Category).order_by(models.Category.kind, models.Category.name).all()

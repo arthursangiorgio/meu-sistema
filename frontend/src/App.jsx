@@ -6,12 +6,14 @@ import { DashboardCharts } from "./components/DashboardCharts";
 import { LoginForm } from "./components/LoginForm";
 import { ReportsView } from "./components/ReportsView";
 import { TransactionForm } from "./components/TransactionForm";
+import { UserManagement } from "./components/UserManagement";
 
 const currentMonth = new Date().toISOString().slice(0, 7);
 
 function App() {
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [users, setUsers] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [dashboard, setDashboard] = useState(null);
   const [report, setReport] = useState(null);
@@ -21,10 +23,12 @@ function App() {
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [savingTransaction, setSavingTransaction] = useState(false);
   const [savingCategory, setSavingCategory] = useState(false);
+  const [savingUser, setSavingUser] = useState(false);
   const [error, setError] = useState("");
 
   const loadBaseData = async (userId, selectedMonth) => {
-    const [categoriesData, transactionsData, dashboardData, reportData, exportData] = await Promise.all([
+    const [usersData, categoriesData, transactionsData, dashboardData, reportData, exportData] = await Promise.all([
+      api.users(),
       api.categories(),
       api.transactions(userId, selectedMonth),
       api.dashboard(userId, selectedMonth),
@@ -32,6 +36,7 @@ function App() {
       api.exportInfo()
     ]);
 
+    setUsers(usersData);
     setCategories(categoriesData);
     setTransactions(transactionsData);
     setDashboard(dashboardData);
@@ -89,6 +94,19 @@ function App() {
     window.open(api.exportUrl(format, user.id, month), "_blank");
   };
 
+  const handleCreateUser = async (payload) => {
+    try {
+      setSavingUser(true);
+      setError("");
+      await api.createUser(payload);
+      await loadBaseData(user.id, month);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingUser(false);
+    }
+  };
+
   if (!user) {
     return (
       <>
@@ -126,6 +144,9 @@ function App() {
         <button className={tab === "reports" ? "tab active" : "tab"} onClick={() => setTab("reports")}>
           Relatorios
         </button>
+        <button className={tab === "users" ? "tab active" : "tab"} onClick={() => setTab("users")}>
+          Usuarios
+        </button>
       </nav>
 
       {dashboard ? (
@@ -162,6 +183,9 @@ function App() {
               onDownloadCsv={() => handleDownload("csv")}
               onDownloadPdf={() => handleDownload("pdf")}
             />
+          ) : null}
+          {tab === "users" ? (
+            <UserManagement users={users} onSubmit={handleCreateUser} loading={savingUser} />
           ) : null}
         </div>
 
