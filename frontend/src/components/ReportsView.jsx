@@ -1,4 +1,4 @@
-export function ReportsView({ report, exportInfo, onDownloadCsv, onDownloadPdf }) {
+export function ReportsView({ report, exportInfo, onDeleteTransaction, onDownloadCsv, onDownloadPdf }) {
   return (
     <section className="report-grid">
       <div className="panel">
@@ -34,6 +34,7 @@ export function ReportsView({ report, exportInfo, onDownloadCsv, onDownloadPdf }
           <div>
             <p className="eyebrow">Exportacoes futuras</p>
             <h2>Estrutura preparada</h2>
+            <p className="muted panel-copy">Baixe o recorte atual do relatorio com um clique.</p>
           </div>
         </div>
         <p className="muted">{exportInfo.message}</p>
@@ -89,6 +90,7 @@ export function ReportsView({ report, exportInfo, onDownloadCsv, onDownloadPdf }
                 <th>Categoria</th>
                 <th>Tipo</th>
                 <th>Valor</th>
+                <th>Acoes</th>
               </tr>
             </thead>
             <tbody>
@@ -99,6 +101,15 @@ export function ReportsView({ report, exportInfo, onDownloadCsv, onDownloadPdf }
                   <td>{item.category_name}</td>
                   <td>{item.kind === "income" ? "Receita" : "Despesa"}</td>
                   <td>R$ {item.amount.toFixed(2)}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="danger-button subtle"
+                      onClick={() => onDeleteTransaction(item)}
+                    >
+                      Excluir
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

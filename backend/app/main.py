@@ -72,6 +72,17 @@ def create_user(payload: schemas.UserCreate, db: Session = Depends(get_db)):
     return user
 
 
+@app.delete("/api/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado.")
+
+    db.delete(user)
+    db.commit()
+    return {"message": "Usuario excluido com sucesso."}
+
+
 @app.get("/api/categories", response_model=list[schemas.CategoryResponse])
 def list_categories(db: Session = Depends(get_db)):
     return db.query(models.Category).order_by(models.Category.kind, models.Category.name).all()
@@ -129,6 +140,17 @@ def create_transaction(payload: schemas.TransactionCreate, db: Session = Depends
         .first()
     )
     return services.serialize_transaction(transaction)
+
+
+@app.delete("/api/transactions/{transaction_id}")
+def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
+    transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Lancamento nao encontrado.")
+
+    db.delete(transaction)
+    db.commit()
+    return {"message": "Lancamento excluido com sucesso."}
 
 
 @app.get("/api/dashboard", response_model=schemas.DashboardResponse)

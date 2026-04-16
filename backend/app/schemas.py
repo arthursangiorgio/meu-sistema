@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class LoginRequest(BaseModel):
@@ -33,13 +33,22 @@ class CategoryResponse(CategoryCreate):
 
 
 class TransactionCreate(BaseModel):
-    description: str = Field(min_length=2, max_length=120)
+    description: str = Field(default="", max_length=120)
     amount: float = Field(gt=0)
     kind: str
     date: date
     category_id: int
     user_id: int
     notes: str | None = None
+
+    @model_validator(mode="after")
+    def fill_default_description(self):
+        if self.description.strip():
+            self.description = self.description.strip()
+            return self
+
+        self.description = "Receita" if self.kind == "income" else "Despesa"
+        return self
 
 
 class TransactionResponse(BaseModel):

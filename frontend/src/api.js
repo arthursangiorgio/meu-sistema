@@ -32,6 +32,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload)
     }),
+  deleteUser: (userId) =>
+    request(`/users/${userId}`, {
+      method: "DELETE"
+    }),
   categories: () => request("/categories"),
   createCategory: (payload) =>
     request("/categories", {
@@ -44,6 +48,10 @@ export const api = {
     request("/transactions", {
       method: "POST",
       body: JSON.stringify(payload)
+    }),
+  deleteTransaction: (transactionId) =>
+    request(`/transactions/${transactionId}`, {
+      method: "DELETE"
     }),
   dashboard: (userId, month) =>
     request(`/dashboard?user_id=${userId}${month ? `&month=${month}` : ""}`),

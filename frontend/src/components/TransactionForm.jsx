@@ -9,6 +9,13 @@ const initialState = {
   notes: ""
 };
 
+const quickAmounts = [1, 5, 10, 25, 50, 100];
+
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL"
+});
+
 export function TransactionForm({ categories, userId, onSubmit, loading }) {
   const [form, setForm] = useState(initialState);
 
@@ -25,10 +32,20 @@ export function TransactionForm({ categories, userId, onSubmit, loading }) {
     }));
   };
 
+  const handleQuickAmount = (increment) => {
+    const currentAmount = Number(form.amount) || 0;
+    const nextAmount = currentAmount + increment;
+    handleChange("amount", nextAmount.toFixed(2));
+  };
+
+  const amountPreview = Number(form.amount) || 0;
+  const descriptionPlaceholder = form.kind === "income" ? "Receita" : "Despesa";
+
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit({
       ...form,
+      description: form.description.trim(),
       amount: Number(form.amount),
       category_id: Number(form.category_id),
       user_id: userId
@@ -55,11 +72,11 @@ export function TransactionForm({ categories, userId, onSubmit, loading }) {
           <input
             value={form.description}
             onChange={(event) => handleChange("description", event.target.value)}
-            required
+            placeholder={`Se deixar vazio, salva como "${descriptionPlaceholder}"`}
           />
         </label>
 
-        <label>
+        <label className="full">
           Valor
           <input
             type="number"
@@ -68,6 +85,27 @@ export function TransactionForm({ categories, userId, onSubmit, loading }) {
             onChange={(event) => handleChange("amount", event.target.value)}
             required
           />
+
+          <div className="amount-panel">
+            <div className="amount-panel-copy">
+              <span>Valor acumulado</span>
+              <strong>{currencyFormatter.format(amountPreview)}</strong>
+              <small>Toque nos atalhos para ir somando rapidamente.</small>
+            </div>
+
+            <div className="quick-amount-grid">
+              {quickAmounts.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className="quick-amount-button"
+                  onClick={() => handleQuickAmount(value)}
+                >
+                  +{value}
+                </button>
+              ))}
+            </div>
+          </div>
         </label>
 
         <label>

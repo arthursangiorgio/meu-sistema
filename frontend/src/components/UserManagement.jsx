@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function UserManagement({ users, onSubmit, loading }) {
+export function UserManagement({ users, currentUserId, onSubmit, onDelete, loading }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -18,6 +18,7 @@ export function UserManagement({ users, onSubmit, loading }) {
           <div>
             <p className="eyebrow">Usuarios</p>
             <h2>Adicionar novo usuario</h2>
+            <p className="muted panel-copy">Crie acessos locais sem sair do sistema.</p>
           </div>
         </div>
 
@@ -48,14 +49,24 @@ export function UserManagement({ users, onSubmit, loading }) {
           <div>
             <p className="eyebrow">Usuarios</p>
             <h2>Usuarios cadastrados</h2>
+            <p className="muted panel-copy">Lista simples para consulta rapida dos acessos existentes.</p>
           </div>
         </div>
 
         <div className="user-list">
           {users.map((item) => (
             <div key={item.id} className="user-item">
-              <strong>{item.username}</strong>
-              <span>ID {item.id}</span>
+              <div>
+                <strong>{item.username}</strong>
+                <p className="muted user-meta">ID {item.id}{item.id === currentUserId ? " • usuario atual" : ""}</p>
+              </div>
+              <button
+                type="button"
+                className="danger-button"
+                onClick={() => onDelete(item)}
+              >
+                Excluir
+              </button>
             </div>
           ))}
         </div>
