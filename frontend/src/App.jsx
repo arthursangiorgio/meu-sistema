@@ -5,6 +5,8 @@ import { CategoryForm } from "./components/CategoryForm";
 import { DashboardCharts } from "./components/DashboardCharts";
 import { LoginForm } from "./components/LoginForm";
 import { ReportsView } from "./components/ReportsView";
+import { SettingsPanel } from "./components/SettingsPanel";
+import { ServicesPanel } from "./components/ServicesPanel";
 import { TransactionForm } from "./components/TransactionForm";
 import { UserManagement } from "./components/UserManagement";
 
@@ -18,23 +20,31 @@ function App() {
   const [dashboard, setDashboard] = useState(null);
   const [report, setReport] = useState(null);
   const [exportInfo, setExportInfo] = useState({ csv_ready: false, pdf_ready: false, message: "" });
+  const [settings, setSettings] = useState(null);
+  const [serviceItems, setServiceItems] = useState([]);
+  const [serviceSummary, setServiceSummary] = useState({ pending_amount: 0, received_amount: 0, total_services: 0 });
   const [month, setMonth] = useState(currentMonth);
   const [tab, setTab] = useState("summary");
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [savingTransaction, setSavingTransaction] = useState(false);
   const [savingCategory, setSavingCategory] = useState(false);
   const [savingUser, setSavingUser] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [savingService, setSavingService] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
   const loadBaseData = async (userId, selectedMonth) => {
-    const [usersData, categoriesData, transactionsData, dashboardData, reportData, exportData] = await Promise.all([
+    const [usersData, categoriesData, transactionsData, dashboardData, reportData, exportData, settingsData, servicesData, servicesSummaryData] = await Promise.all([
       api.users(),
       api.categories(),
       api.transactions(userId, selectedMonth),
       api.dashboard(userId, selectedMonth),
       api.reports(userId, selectedMonth),
-      api.exportInfo()
+      api.exportInfo(),
+      api.userSettings(userId),
+      api.services(userId, selectedMonth),
+      api.servicesSummary(userId, selectedMonth)
     ]);
 
     setUsers(usersData);
@@ -43,6 +53,9 @@ function App() {
     setDashboard(dashboardData);
     setReport(reportData);
     setExportInfo(exportData);
+    setSettings(settingsData);
+    setServiceItems(servicesData);
+    setServiceSummary(servicesSummaryData);
   };
 
   useEffect(() => {
@@ -157,6 +170,66 @@ function App() {
     }
   };
 
+  const handleUpdateSettings = async (payload) => {
+    try {
+      setSavingSettings(true);
+      setError("");
+      const updatedSettings = await api.updateUserSettings(user.id, payload);
+      setSettings(updatedSettings);
+      setNotice("Configuracao salva com sucesso.");
+      await loadBaseData(user.id, month);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleCreateService = async (payload) => {
+    try {
+      setSavingService(true);
+      setError("");
+      await api.createService(payload);
+      await loadBaseData(user.id, month);
+      setNotice("Servico salvo com sucesso.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingService(false);
+    }
+  };
+
+  const handleToggleServiceStatus = async (service) => {
+    try {
+      setError("");
+      const nextStatus = service.status === "received" ? "pending" : "received";
+      await api.updateService(service.id, {
+        status: nextStatus,
+        received_date: nextStatus === "received" ? (service.received_date || service.service_date) : null
+      });
+      await loadBaseData(user.id, month);
+      setNotice("Status do servico atualizado.");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteService = async (service) => {
+    const confirmed = window.confirm(`Excluir o servico "${service.title}"?`);
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError("");
+      await api.deleteService(service.id);
+      await loadBaseData(user.id, month);
+      setNotice("Servico excluido com sucesso.");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const summaryCards = dashboard ? (
     <section className="hero-cards">
       <div className="hero-card primary">
@@ -263,6 +336,12 @@ function App() {
         <button className={tab === "users" ? "tab active" : "tab"} onClick={() => setTab("users")}>
           Usuarios
         </button>
+        <button className={tab === "settings" ? "tab active" : "tab"} onClick={() => setTab("settings")}>
+          Configuracao
+        </button>
+        <button className={tab === "services" ? "tab active" : "tab"} onClick={() => setTab("services")}>
+          Servicos
+        </button>
       </nav>
 
       {tab === "summary" ? (
@@ -273,6 +352,7 @@ function App() {
             <div className="main-column summary-form-column">
               <TransactionForm
                 categories={categories}
+                settings={settings}
                 userId={user.id}
                 onSubmit={handleCreateTransaction}
                 loading={savingTransaction}
@@ -318,6 +398,20 @@ function App() {
           onSubmit={handleCreateUser}
           onDelete={handleDeleteUser}
           loading={savingUser}
+        />
+      ) : null}
+      {tab === "settings" ? (
+        <SettingsPanel categories={categories} settings={settings} onSubmit={handleUpdateSettings} loading={savingSettings} />
+      ) : null}
+      {tab === "services" ? (
+        <ServicesPanel
+          services={serviceItems}
+          summary={serviceSummary}
+          userId={user.id}
+          onCreate={handleCreateService}
+          onToggleStatus={handleToggleServiceStatus}
+          onDelete={handleDeleteService}
+          loading={savingService}
         />
       ) : null}
     </div>

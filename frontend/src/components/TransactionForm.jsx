@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const initialState = {
   description: "",
@@ -16,13 +16,20 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   currency: "BRL"
 });
 
-export function TransactionForm({ categories, userId, onSubmit, loading }) {
+export function TransactionForm({ categories, settings, userId, onSubmit, loading }) {
   const [form, setForm] = useState(initialState);
 
   const filteredCategories = useMemo(
     () => categories.filter((category) => category.kind === form.kind),
     [categories, form.kind]
   );
+
+  const defaultCategoryId = useMemo(() => {
+    if (form.kind === "income") {
+      return settings?.default_income_category_id?.toString() || "";
+    }
+    return settings?.default_expense_category_id?.toString() || "";
+  }, [form.kind, settings]);
 
   const handleChange = (field, value) => {
     setForm((current) => ({
@@ -39,7 +46,29 @@ export function TransactionForm({ categories, userId, onSubmit, loading }) {
   };
 
   const amountPreview = Number(form.amount) || 0;
-  const descriptionPlaceholder = form.kind === "income" ? "Receita" : "Despesa";
+  const descriptionPlaceholder =
+    form.kind === "income"
+      ? settings?.default_income_description || "Receita"
+      : settings?.default_expense_description || "Despesa";
+
+  useEffect(() => {
+    const currentCategoryIsValid = filteredCategories.some((category) => String(category.id) === form.category_id);
+
+    if (!form.category_id && defaultCategoryId) {
+      setForm((current) => ({
+        ...current,
+        category_id: defaultCategoryId
+      }));
+      return;
+    }
+
+    if (form.category_id && !currentCategoryIsValid) {
+      setForm((current) => ({
+        ...current,
+        category_id: defaultCategoryId
+      }));
+    }
+  }, [defaultCategoryId, filteredCategories, form.category_id]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -53,6 +82,7 @@ export function TransactionForm({ categories, userId, onSubmit, loading }) {
     setForm((current) => ({
       ...initialState,
       kind: current.kind,
+      category_id: defaultCategoryId,
       date: new Date().toISOString().slice(0, 10)
     }));
   };

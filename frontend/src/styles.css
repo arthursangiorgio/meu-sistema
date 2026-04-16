@@ -250,7 +250,10 @@ label {
 .main-column,
 .side-column,
 .report-grid,
-.category-management {
+.category-management,
+.settings-grid,
+.services-layout,
+.service-summary-grid {
   display: grid;
   gap: 20px;
 }
@@ -470,6 +473,63 @@ label {
   grid-template-columns: 1.05fr 0.95fr;
 }
 
+.settings-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.services-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.service-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.compact-service-card {
+  min-height: 0;
+}
+
+.service-list {
+  display: grid;
+  gap: 14px;
+}
+
+.service-item {
+  border-radius: 20px;
+  padding: 16px;
+  background: rgba(244, 247, 251, 0.95);
+  border: 1px solid #dbe4f0;
+}
+
+.service-client,
+.service-notes {
+  margin: 6px 0 0;
+}
+
+.service-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.service-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ghost-action {
+  background: rgba(226, 232, 240, 0.92);
+  color: #1e3a5f;
+}
+
+.badge.pending {
+  background: rgba(217, 119, 6, 0.14);
+  color: #b45309;
+}
+
 .category-card {
   align-items: center;
   padding: 14px 16px;
@@ -563,7 +623,9 @@ td {
   .chart-grid,
   .report-grid,
   .user-grid,
-  .category-management {
+  .category-management,
+  .settings-grid,
+  .service-summary-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -713,5 +775,11 @@ td {
   .quick-amount-button {
     padding: 0.66rem 0.7rem;
     font-size: 0.88rem;
+  }
+
+  .service-meta-grid,
+  .service-actions {
+    grid-template-columns: 1fr;
+    display: grid;
   }
 }

@@ -1,6 +1,7 @@
 import csv
 import io
 
+from sqlalchemy import inspect, text
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -15,6 +16,25 @@ from .seed import seed_defaults
 
 app = FastAPI(title="Expense Control API", version="0.1.0")
 
+def ensure_user_settings_columns():
+    inspector = inspect(engine)
+    columns = {column["name"] for column in inspector.get_columns("users")}
+    missing_columns = {
+        "default_income_description": "ALTER TABLE users ADD COLUMN default_income_description VARCHAR",
+        "default_expense_description": "ALTER TABLE users ADD COLUMN default_expense_description VARCHAR",
+        "default_income_category_id": "ALTER TABLE users ADD COLUMN default_income_category_id INTEGER",
+        "default_expense_category_id": "ALTER TABLE users ADD COLUMN default_expense_category_id INTEGER",
+    }
+
+    if not missing_columns.keys() - columns:
+        return
+
+    with engine.begin() as connection:
+        for column_name, statement in missing_columns.items():
+            if column_name not in columns:
+                connection.execute(text(statement))
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,6 +47,7 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
+    ensure_user_settings_columns()
     db = SessionLocal()
     try:
         seed_defaults(db)
@@ -83,6 +104,38 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     return {"message": "Usuario excluido com sucesso."}
 
 
+@app.get("/api/users/{user_id}/settings", response_model=schemas.UserSettingsResponse)
+def get_user_settings(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado.")
+    return user
+
+
+@app.put("/api/users/{user_id}/settings", response_model=schemas.UserSettingsResponse)
+def update_user_settings(user_id: int, payload: schemas.UserSettingsUpdate, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado.")
+
+    if payload.default_income_category_id:
+        income_category = db.query(models.Category).filter(models.Category.id == payload.default_income_category_id).first()
+        if not income_category or income_category.kind != "income":
+            raise HTTPException(status_code=400, detail="Categoria padrao de receita invalida.")
+
+    if payload.default_expense_category_id:
+        expense_category = db.query(models.Category).filter(models.Category.id == payload.default_expense_category_id).first()
+        if not expense_category or expense_category.kind != "expense":
+            raise HTTPException(status_code=400, detail="Categoria padrao de despesa invalida.")
+
+    for field, value in payload.model_dump().items():
+        setattr(user, field, value)
+
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 @app.get("/api/categories", response_model=list[schemas.CategoryResponse])
 def list_categories(db: Session = Depends(get_db)):
     return db.query(models.Category).order_by(models.Category.kind, models.Category.name).all()
@@ -123,13 +176,32 @@ def create_transaction(payload: schemas.TransactionCreate, db: Session = Depends
     if not user:
         raise HTTPException(status_code=404, detail="Usuario nao encontrado.")
 
-    category = db.query(models.Category).filter(models.Category.id == payload.category_id).first()
+    category_id = payload.category_id
+    if category_id is None:
+        category_id = (
+            user.default_income_category_id if payload.kind == "income" else user.default_expense_category_id
+        )
+
+    if category_id is None:
+        raise HTTPException(status_code=400, detail="Selecione uma categoria ou defina uma categoria padrao.")
+
+    category = db.query(models.Category).filter(models.Category.id == category_id).first()
     if not category:
         raise HTTPException(status_code=404, detail="Categoria nao encontrada.")
     if category.kind != payload.kind:
         raise HTTPException(status_code=400, detail="Tipo da transacao e da categoria precisam ser iguais.")
 
-    transaction = models.Transaction(**payload.model_dump())
+    description = payload.description.strip()
+    if not description:
+        description = (
+            user.default_income_description if payload.kind == "income" else user.default_expense_description
+        ) or ("Receita" if payload.kind == "income" else "Despesa")
+
+    transaction_payload = payload.model_dump()
+    transaction_payload["category_id"] = category_id
+    transaction_payload["description"] = description
+
+    transaction = models.Transaction(**transaction_payload)
     db.add(transaction)
     db.commit()
     db.refresh(transaction)
@@ -151,6 +223,70 @@ def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
     db.delete(transaction)
     db.commit()
     return {"message": "Lancamento excluido com sucesso."}
+
+
+@app.get("/api/services", response_model=list[schemas.ServiceResponse])
+def list_services(
+    user_id: int = Query(...),
+    month: str | None = Query(default=None),
+    db: Session = Depends(get_db),
+):
+    service_items, _ = services.services_data(db, user_id, month)
+    return service_items
+
+
+@app.get("/api/services/summary", response_model=schemas.ServiceSummaryResponse)
+def get_services_summary(
+    user_id: int = Query(...),
+    month: str | None = Query(default=None),
+    db: Session = Depends(get_db),
+):
+    _, summary = services.services_data(db, user_id, month)
+    return summary
+
+
+@app.post("/api/services", response_model=schemas.ServiceResponse)
+def create_service(payload: schemas.ServiceCreate, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == payload.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario nao encontrado.")
+
+    service = models.Service(**payload.model_dump())
+    db.add(service)
+    db.commit()
+    db.refresh(service)
+    return services.serialize_service(service)
+
+
+@app.put("/api/services/{service_id}", response_model=schemas.ServiceResponse)
+def update_service(service_id: int, payload: schemas.ServiceUpdate, db: Session = Depends(get_db)):
+    service = db.query(models.Service).filter(models.Service.id == service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="Servico nao encontrado.")
+
+    data = payload.model_dump(exclude_unset=True)
+    for field, value in data.items():
+        setattr(service, field, value)
+
+    if service.status == "received" and service.received_date is None:
+        service.received_date = service.service_date
+    if service.status == "pending":
+        service.received_date = None
+
+    db.commit()
+    db.refresh(service)
+    return services.serialize_service(service)
+
+
+@app.delete("/api/services/{service_id}")
+def delete_service(service_id: int, db: Session = Depends(get_db)):
+    service = db.query(models.Service).filter(models.Service.id == service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="Servico nao encontrado.")
+
+    db.delete(service)
+    db.commit()
+    return {"message": "Servico excluido com sucesso."}
 
 
 @app.get("/api/dashboard", response_model=schemas.DashboardResponse)

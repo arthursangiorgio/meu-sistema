@@ -32,6 +32,12 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload)
     }),
+  userSettings: (userId) => request(`/users/${userId}/settings`),
+  updateUserSettings: (userId, payload) =>
+    request(`/users/${userId}/settings`, {
+      method: "PUT",
+      body: JSON.stringify(payload)
+    }),
   deleteUser: (userId) =>
     request(`/users/${userId}`, {
       method: "DELETE"
@@ -51,6 +57,24 @@ export const api = {
     }),
   deleteTransaction: (transactionId) =>
     request(`/transactions/${transactionId}`, {
+      method: "DELETE"
+    }),
+  services: (userId, month) =>
+    request(`/services?user_id=${userId}${month ? `&month=${month}` : ""}`),
+  servicesSummary: (userId, month) =>
+    request(`/services/summary?user_id=${userId}${month ? `&month=${month}` : ""}`),
+  createService: (payload) =>
+    request("/services", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  updateService: (serviceId, payload) =>
+    request(`/services/${serviceId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload)
+    }),
+  deleteService: (serviceId) =>
+    request(`/services/${serviceId}`, {
       method: "DELETE"
     }),
   dashboard: (userId, month) =>
